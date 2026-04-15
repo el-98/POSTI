@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { Suspense, useContext, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -9,7 +9,7 @@ import { TokenContext } from "../TokenContext";
 
 const emptyItem = { product: "", quantity: "", cost: "" };
 
-export default function PurchasesPage() {
+function PurchasesPageContent() {
   const searchParams = useSearchParams();
   const productIdFromUrl = searchParams.get("product");
   const { token } = useContext(TokenContext);
@@ -212,5 +212,27 @@ export default function PurchasesPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+function PurchasesFallback() {
+  return (
+    <main>
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">Compras</h1>
+          <p className="page-subtitle">Historial y registro de compras a proveedores</p>
+        </div>
+      </div>
+      <p className="dashboard-muted">Cargando…</p>
+    </main>
+  );
+}
+
+export default function PurchasesPage() {
+  return (
+    <Suspense fallback={<PurchasesFallback />}>
+      <PurchasesPageContent />
+    </Suspense>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -33,7 +33,7 @@ function StatusStepper({ currentStatus }) {
   );
 }
 
-export default function PublicRepairStatusPage() {
+function PublicRepairStatusContent() {
   const searchParams = useSearchParams();
   const codeFromUrl = searchParams.get("tracking") || searchParams.get("code") || "";
   const [code, setCode] = useState("");
@@ -203,5 +203,33 @@ export default function PublicRepairStatusPage() {
         </div>
       )}
     </main>
+  );
+}
+
+function RepairStatusFallback() {
+  return (
+    <main className="repair-status-page">
+      <div className="repair-status-hero">
+        <Link href="/" className="repair-status-back">
+          ← Volver al inicio
+        </Link>
+        <h1 className="repair-status-title">Seguimiento de tu reparación</h1>
+        <p className="repair-status-subtitle">
+          Ingresa el código que te entregaron al dejar tu equipo. Con él puedes ver el estado en cualquier momento.
+        </p>
+      </div>
+      <div className="repair-status-card repair-status-loading">
+        <div className="loading-spinner" style={{ margin: "0 auto 12px" }} />
+        <p>Cargando…</p>
+      </div>
+    </main>
+  );
+}
+
+export default function PublicRepairStatusPage() {
+  return (
+    <Suspense fallback={<RepairStatusFallback />}>
+      <PublicRepairStatusContent />
+    </Suspense>
   );
 }
